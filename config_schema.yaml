@@ -1,0 +1,40 @@
+type: map
+mapping:
+    github:
+        type: map
+        mapping:
+            user:
+                type: str
+                required: True
+            repo:
+                type: str
+                required: True
+            token:
+                type: str
+                required: True
+            assets:
+                type: seq
+                required: True
+                matching: 'any'
+                sequence:
+                    - type: map
+                      mapping:
+                          path:
+                              type: str
+                              required: True
+                          type:
+                              type: str
+                              required: True
+
+    version_strings:
+        type: seq
+        required: True
+        sequence:
+            - type: map
+              mapping:
+                  path:
+                      type: str
+                      required: True
+                  pattern:
+                      type: str
+                      required: True
