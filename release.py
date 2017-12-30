@@ -259,7 +259,7 @@ def update_to_alpha(release, version_strings):
 
 def parse_args():
     '''Parse command line arguments'''
-    parser = argparse.ArgumentParser('Deploy XPI release')
+    parser = argparse.ArgumentParser('Mark git release')
     parser.add_argument('--release', '-r', required=True,
                         help='Release version string')
     parser.add_argument('--config', '-c', default='config.yaml',
