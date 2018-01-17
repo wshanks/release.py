@@ -186,14 +186,24 @@ def update_version(release, version_strings):
 
         subprocess.run(['git', 'add', path], check=True)
 
+    if not git_clean(cached=True):
         msg = 'Version {}'.format(release)
         subprocess.run(['git', 'commit', '-m', msg], check=True)
-        tag = 'v{}'.format(release)
-        subprocess.run(['git', 'tag', tag], check=True)
+    tag = 'v{}'.format(release)
+    subprocess.run(['git', 'tag', tag], check=True)
+
+
+def git_clean(cached=False):
+    cmd = ['git', 'diff', '--quiet']
+    if cached:
+        cmd.append('--cached')
+    proc = subprocess.run(cmd)
+    return proc.returncode == 0
 
 
 def check_git_clean():
-    subprocess.run(['git', 'diff-files', '--quiet'], check=True)
+    if not git_clean():
+        raise Exception('Git state not clean when it should be.')
 
 
 def build(release):
@@ -260,8 +270,9 @@ def update_to_alpha(release, version_strings):
         path = os.path.join(git_root, file_spec['path'])
         replace_string(path, file_spec['pattern'], new_release)
         subprocess.run(['git', 'add', path], check=True)
-        msg = 'Bump version to beta {}'.format(new_release)
-        subprocess.run(['git', 'commit', '-m', msg], check=True)
+
+    msg = 'Bump version to beta {}'.format(new_release)
+    subprocess.run(['git', 'commit', '-m', msg], check=True)
 
 
 def parse_args():
