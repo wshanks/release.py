@@ -270,6 +270,8 @@ def update_to_alpha(release, version_strings):
                                          1))
     git_root = get_git_root()
     for file_spec in version_strings:
+        if file_spec.get('skip_alpha'):
+            continue
         path = os.path.join(git_root, file_spec['path'])
         replace_string(path, file_spec['pattern'], new_release)
         subprocess.run(['git', 'add', path], check=True)
