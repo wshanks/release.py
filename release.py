@@ -255,6 +255,9 @@ def github_release(release, user, repo, token, assets):
 def push_release(release, config):
     subprocess.run(['git', 'push'])
     subprocess.run(['git', 'push', '--tags'])
+    if 'git_release' in config:
+        subprocess.run(['git', 'push', config['git_release']['remote'],
+                        'HEAD:{}'.format(config['git_release']['branch'])])
     if 'github' in config:
         github_release('v{}'.format(release), **config['github'])
 
