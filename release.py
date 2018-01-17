@@ -137,7 +137,8 @@ def get_git_root():
 
 
 def get_current_version(path, pattern):
-    with open(path) as file_:
+    git_root = get_git_root()
+    with open(os.path.join(git_root, path)) as file_:
         for line in file_.readlines():
             match = re.search(pattern, line)
             if match:
@@ -178,10 +179,13 @@ def update_version(release, version_strings):
     'Update repo contents for new release and commit changes'
     check_git_clean()
 
+    git_root = get_git_root()
     for file_spec in version_strings:
-        replace_string(file_spec['path'], file_spec['pattern'], release)
+        path = os.path.join(git_root, file_spec['path'])
+        replace_string(path, file_spec['pattern'], release)
 
-        subprocess.run(['git', 'add', file_spec['path']], check=True)
+        subprocess.run(['git', 'add', path], check=True)
+
         msg = 'Version {}'.format(release)
         subprocess.run(['git', 'commit', '-m', msg], check=True)
         tag = 'v{}'.format(release)
@@ -216,7 +220,7 @@ def github_release(release, user, repo, token, assets):
 
     release_json = get_release_json()
 
-    with open(token) as token_file:
+    with open(os.path.join(get_git_root(), token)) as token_file:
         token = token_file.read().strip()
 
     if not release_json:
@@ -233,7 +237,8 @@ def github_release(release, user, repo, token, assets):
         headers = {'Content-Type': file_['type'],
                    'Authorization': 'token {}'.format(token)}
         req = requests.post(upload_url, headers=headers,
-                            data=open(file_['path'], 'rb'))
+                            data=open(os.path.join(get_git_root(),
+                                                   file_['path']), 'rb'))
         req.raise_for_status()
 
 
@@ -250,9 +255,11 @@ def update_to_alpha(release, version_strings):
                                          release.micro+1,
                                          'a',
                                          1))
+    git_root = get_git_root()
     for file_spec in version_strings:
-        replace_string(file_spec['path'], file_spec['pattern'], new_release)
-        subprocess.run(['git', 'add', file_spec['path']], check=True)
+        path = os.path.join(git_root, file_spec['path'])
+        replace_string(path, file_spec['pattern'], new_release)
+        subprocess.run(['git', 'add', path], check=True)
         msg = 'Bump version to beta {}'.format(new_release)
         subprocess.run(['git', 'commit', '-m', msg], check=True)
 
