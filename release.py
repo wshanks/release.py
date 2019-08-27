@@ -13,9 +13,9 @@ from uritemplate import expand
 import yaml
 
 
-VERSION_FMT = ('^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<micro>\d+)'
-               '(?P<prerelease>(b|(beta)|a|(alpha))\d+)?'
-               '(?P<revision>\+[A-Za-z0-9]+)?$')
+VERSION_FMT = (r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<micro>\d+)'
+               r'(?P<prerelease>(b|(beta)|a|(alpha))(\d+)?)?'
+               r'(?P<revision>\+[A-Za-z0-9]+)?$')
 SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -26,11 +26,11 @@ def check_version(version):
     exist
     '''
     if not re.match(VERSION_FMT, version):
-        raise ValueError('Invalid version: %s', version)
+        raise ValueError(f'Invalid version: {version}')
 
 
 @total_ordering
-class Version(object):
+class Version:
     def __init__(self, string='', version_tuple=None):
         pre = None
         rev = None
@@ -41,7 +41,7 @@ class Version(object):
 
             match = re.match(VERSION_FMT, string)
             if not match:
-                raise ValueError('Invalid version: %s', string)
+                raise ValueError(f'Invalid version: {string}')
             self.major = int(match.group('major'))
             self.minor = int(match.group('minor'))
             self.micro = int(match.group('micro'))
@@ -49,10 +49,15 @@ class Version(object):
             if pre is not None:
                 if pre.startswith('b'):
                     self.prerelease_type = 'b'
-                    self.prerelease_number = int(pre.strip('beta').strip('b'))
+                    prerelease_number = pre.strip('beta').strip('b')
                 elif pre.startswith('a'):
                     self.prerelease_type = 'a'
-                    self.prerelease_number = int(pre.strip('alpha').strip('a'))
+                    prerelease_number = pre.strip('alpha').strip('a')
+
+                if prerelease_number:
+                    self.prerelease_number = int(prerelease_number)
+                else:
+                    self.prerelease_number = 0
             else:
                 self.prerelease_type = 'r'
                 self.prerelease_number = 0
@@ -79,8 +84,7 @@ class Version(object):
             fmt = '{prefix}{prerelease}'
             return fmt .format(prefix=self.prerelease_type,
                                prerelease=self.prerelease_number)
-        else:
-            return ''
+        return ''
 
     def __str__(self):
         fmt = '{major}.{minor}.{micro}{beta}{rev}'
@@ -142,7 +146,7 @@ def get_current_version(path, pattern):
         for line in file_.readlines():
             match = re.search(pattern, line)
             if match:
-                return Version(string=match.group(2))
+                return Version(string=match.group("release"))
 
 
 def check_versions(last_version, current_version, release):
