@@ -300,7 +300,7 @@ def main():
     args = parse_args()
 
     with open(args.config) as file_:
-        config = yaml.load(file_)
+        config = yaml.load(file_, Loader=yaml.SafeLoader)
     try:
         from pykwalify.core import Core
         core = Core(source_data=config,
