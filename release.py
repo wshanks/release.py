@@ -282,6 +282,7 @@ def update_to_alpha(release, version_strings):
 
     msg = 'Bump version to beta {}'.format(new_release)
     subprocess.run(['git', 'commit', '-m', msg], check=True)
+    subprocess.run(['git', 'push'])
 
 
 def parse_args():
