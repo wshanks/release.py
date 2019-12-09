@@ -21,7 +21,7 @@ Script does the following:
 5. Commit changes with message about new release version and tag the commit with the version number.
 6. Run `make clean` and `make`.
 7. Push the new release commit and tag.
-8. If `github` is configured in `CONFIG`, convert tag to a GitHug release and upload assets to it.
+8. If `github` is configured in `CONFIG`, convert tag to a GitHub release and upload assets to it.
 9. Bump `version_strings` again to an alpha version one micro version ahead of `RELEASE` and make a new commit with this version string change.
 
 Config
