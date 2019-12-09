@@ -30,4 +30,6 @@ Config file is a yaml file with a `version_strings` block containing a list of m
 
 The first entry in `version_strings` list is used to determine the current version when sanity checking. If `RELEASE` is lower than the current version, an exception is raised. Also, if the current version is lower than the latest tagged release, an exception is raised. This check is there to prevent accidentally releasing from an old branch.
 
+The config can optionally contain a `git_release` mapping with `remote` and `branch` entries. When this entry is present, the release commit is pushed to this branch on this remote (in additon to the push the default upstream branch done with a simple `git push`). The main purpose of this `git_release` entry to maintain a branch whose HEAD is always pointing to the most recent stable release.
+
 The config can also contain a `github` mapping with `user`, `repo`, `token` and `assets` entries. `assets` is a list mappings with `path` and `type` entries. These file paths relative to the git root will be attached to a GitHub release for `RELEASE`. The `type` is the MIME type as required by GitHub. `user` and `repo` are the user and repo to create the release for on GitHub. `token` is a text file containing the authorization token required to use the GitHub API for that repo.
