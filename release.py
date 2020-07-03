@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import time
 
 import requests
 from uritemplate import expand
@@ -244,6 +245,10 @@ def github_release(release, user, repo, token, assets):
                             headers=headers)
         req.raise_for_status()
         release_json = get_release_json()
+        if not release_json:
+            print("Release not found on GitHub. Trying again in a second.")
+            time.sleep(1)
+            release_json = get_release_json()
 
     for file_ in assets:
         upload_url = expand(release_json['upload_url'],
