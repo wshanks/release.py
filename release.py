@@ -245,10 +245,15 @@ def github_release(release, user, repo, token, assets):
                             headers=headers)
         req.raise_for_status()
         release_json = get_release_json()
-        if not release_json:
-            print("Release not found on GitHub. Trying again in a second.")
-            time.sleep(1)
+        for wait in (1, 1, 2, 2, 5):
+            if release_json:
+                break
+            print(f"Release not found on GitHub. Trying again in {wait} second(s).")
+            time.sleep(wait)
             release_json = get_release_json()
+
+        if not release_json:
+            raise RuntimeError("Timed out waiting for GitHub release creation!")
 
     for file_ in assets:
         upload_url = expand(release_json['upload_url'],
