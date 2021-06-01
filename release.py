@@ -245,10 +245,11 @@ def github_release(release, user, repo, token, assets):
                             headers=headers)
         req.raise_for_status()
         release_json = get_release_json()
-        for wait in (1, 1, 2, 2, 5):
+        for wait in (1, 1, 2, 2, 5, 5, 10, 10, 10, 30, 60, 120):
             if release_json:
                 break
             print(f"Release not found on GitHub. Trying again in {wait} second(s).")
+            print(f"    It should appear at {api_url}")
             time.sleep(wait)
             release_json = get_release_json()
 
